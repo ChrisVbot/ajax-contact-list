@@ -1,5 +1,4 @@
 require "sinatra/json"
-require "pry"
 # Homepage (Root path)
 get '/' do
   erb :index
@@ -16,27 +15,20 @@ get '/api/search/' do
 end
 
 post '/api/new/' do
-  newUser = JSON.parse(request.body.read)
-  first_name = newUser.values[0]
-  last_name = newUser.values[1]
-  email = newUser.values[2]
-  phone_number = newUser.values[3]
+  first_name = params[:firstname]
+  last_name = params[:lastname]
+  email = params[:email]
+  phone_number = params[:phoneno]
   @contact = Contact.new(first_name: first_name, last_name: last_name, email: email, phone_number:phone_number)
-  if 
-    @contact.save
-    @contact.to_json
-  end
+  @contact.save
+  @contact.to_json
 end
 
 post '/api/delete/' do
-  userId = JSON.parse(request.body.read)
-  id = userId.values[0]
-  @contact = Contact.where("id LIKE?", "#{id}")
-  # @name = @contact[0]
-  if 
-    @contact[0].destroy
-    response.status = 200
-  # @name.to_json
-  end
+  info = params[:param]
+  @contact = Contact.where("email LIKE?", "%#{info}%")
+  @name = @contact[0]
+  @contact[0].destroy
+  @name.to_json
 end
 
